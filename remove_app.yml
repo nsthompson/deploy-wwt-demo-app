@@ -1,0 +1,32 @@
+---
+- name: Remove WWT Application
+  hosts: all
+  gather_facts: false
+  become: true
+  vars:
+    host_port: 8080
+    # app runs on 8080 so don't change unless app.py modified and image pushed
+    container_port: 8080
+    container_name: wwt-demo-app
+
+  tasks:
+    - name: Podman install
+      ansible.builtin.dnf:
+        name: podman
+        state: present
+
+    - name: See if container exists
+      containers.podman.podman_container_info:
+        name: "{{ container_name }}"
+      register: container_info
+
+    - name: Remove Application Container
+      containers.podman.podman_container:
+        name: "{{ container_name }}"
+        state: absent
+      register: container
+      when: container_info['containers'] is iterable
+
+    - name: Print container
+      ansible.builtin.debug:
+        var: container

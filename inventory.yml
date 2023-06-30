@@ -1,0 +1,4 @@
+all:
+  hosts:
+    rhel-edge01:
+      ansible_host: 10.115.100.30
