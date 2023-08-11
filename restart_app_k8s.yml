@@ -3,8 +3,8 @@
   hosts: all
   gather_facts: false
   vars:
-    username: "{{ ansible_user }}"
-    password: "{{ ansible_password }}"
+    username: "{{ k8s_username }}"
+    password: "{{ k8s_password }}"
     cluster_url: "{{ hostvars[inventory_hostname].cluster_url }}"
 
   tasks:
