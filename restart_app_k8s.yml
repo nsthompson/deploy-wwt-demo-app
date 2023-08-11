@@ -1,7 +1,6 @@
 ---
 - name: Restart Demo Application
   hosts: all
-  connection: local
   gather_facts: false
   vars:
     username: "{{ ansible_user }}"
@@ -20,6 +19,7 @@
         namespace: "{{ k8s_namespace }}"
         replicas: 0
         validate_certs: false
+      delegate_to: localhost
 
     - name: Scale Application Deployment to 1
       kubernetes.core.k8s_scale:
@@ -32,3 +32,4 @@
         namespace: "{{ k8s_namespace }}"
         replicas: 1
         validate_certs: false
+      delegate_to: localhost
