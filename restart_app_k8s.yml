@@ -5,6 +5,7 @@
   vars:
     username: "{{ ansible_user }}"
     password: "{{ ansible_password }}"
+    cluster_url: "{{ hostvars[inventory_hostname].cluster_url }}"
 
   tasks:
     - name: Scale Application Deployment to 0
