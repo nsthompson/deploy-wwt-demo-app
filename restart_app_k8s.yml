@@ -1,6 +1,6 @@
 ---
 - name: Restart Demo Application
-  hosts: localhost
+  hosts: all
   gather_facts: false
   vars:
     username: "{{ ansible_user }}"
