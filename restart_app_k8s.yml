@@ -8,11 +8,19 @@
     cluster_url: "{{ hostvars[inventory_hostname].cluster_url }}"
 
   tasks:
-    - name: Scale Application Deployment to 0
-      kubernetes.core.k8s_scale:
+    - name: Get Openshift Access Token
+      community.okd.openshift_auth:
         host: "{{ cluster_url }}"
         username: "{{ username }}"
         password: "{{ password }}"
+        validate_certs: false
+      register: openshift_auth_results
+      delegate_to: localhost
+
+    - name: Scale Application Deployment to 0
+      kubernetes.core.k8s_scale:
+        host: "{{ cluster_url }}"
+        api_key: "{{ openshift_auth_results.openshift_auth.api_key }}"
         api_version: v1
         kind: Deployment
         name: "{{ deployment_name }}"
@@ -24,8 +32,7 @@
     - name: Scale Application Deployment to 1
       kubernetes.core.k8s_scale:
         host: "{{ cluster_url }}"
-        username: "{{ username }}"
-        password: "{{ password }}"
+        api_key: "{{ openshift_auth_results.openshift_auth.api_key }}"
         api_version: v1
         kind: Deployment
         name: "{{ deployment_name }}"
