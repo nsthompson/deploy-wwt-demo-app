@@ -75,9 +75,10 @@
             url: "https://{{ ansible_eda.event.alert.tags.openshiftRoute }}"
             method: GET
             return_content: true
+            validate_certs:  false
           until: application_test_result.status == 200
           delay: 5
-          retries: 3
+          retries: 5
           register: application_test_result
           delegate_to: localhost
       rescue:
