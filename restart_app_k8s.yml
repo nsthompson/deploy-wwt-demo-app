@@ -9,6 +9,32 @@
     bigpanda_base_url: https://api.bigpanda.io/resources/v2.0
 
   tasks:
+    - name: Update Big Panda
+      block:
+        - name: Comment on Big Panda Incident
+          ansible.builtin.uri:
+            url: "{{ bigpanda_base_url }}/environments/{{ ansible_eda.event.environment.id }}/incidents/{{ ansible_eda.event.incident.id }}/comments"
+            method: POST
+            status_code: 204
+            headers:
+              Content-Type: application/json
+              Accept: application/json
+              Authorization: "Bearer {{ bigpanda_api_key }}"
+            body_format: json
+            body:
+              comment: "Incident handled by Event-Driven Ansible ruleset: {{ ansible_eda.ruleset }}"
+          changed_when: create_comment_result.status == 204
+          until: create_comment_result.status != 429
+          delay: 5
+          retries: 3
+          register: create_comment_result
+          when: ansible_eda.event is defined
+          delegate_to: localhost
+      rescue:
+        - name: Something went wrong...
+          ansible.builtin.debug:
+            msg: "ERROR: {{ create_comment_result }}"
+
     - name: Get Openshift Access Token
       community.okd.openshift_auth:
         host: "{{ cluster_url }}"
@@ -41,32 +67,6 @@
         replicas: 1
         validate_certs: false
       delegate_to: localhost
-
-    - name: Update Big Panda
-      block:
-        - name: Comment on Big Panda Incident
-          ansible.builtin.uri:
-            url: "{{ bigpanda_base_url }}/environments/{{ ansible_eda.event.environment.id }}/incidents/{{ ansible_eda.event.incident.id }}/comments"
-            method: POST
-            status_code: 204
-            headers:
-              Content-Type: application/json
-              Accept: application/json
-              Authorization: "Bearer {{ bigpanda_api_key }}"
-            body_format: json
-            body:
-              comment: "Incident handled by Event-Driven Ansible ruleset: {{ ansible_eda.ruleset }}"
-          changed_when: create_comment_result.status == 204
-          until: create_comment_result.status != 429
-          delay: 5
-          retries: 3
-          register: create_comment_result
-          when: ansible_eda.event is defined
-          delegate_to: localhost
-      rescue:
-        - name: Something went wrong...
-          ansible.builtin.debug:
-            msg: "ERROR: {{ create_comment_result }}"
 
     - name: Test Application
       block:
