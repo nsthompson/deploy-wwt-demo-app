@@ -6,14 +6,14 @@
     username: "{{ k8s_username }}"
     password: "{{ k8s_password }}"
     cluster_url: "{{ hostvars[inventory_hostname].cluster_url }}"
-    bigpanda_base_url: https://api.bigpanda.io/resources/v2.0
+    bigpanda_base_url: https://api.bigpanda.io/resources
 
   tasks:
     - name: Update Big Panda
       block:
         - name: Comment on Big Panda Incident
           ansible.builtin.uri:
-            url: "{{ bigpanda_base_url }}/environments/{{ ansible_eda.event.environment.id }}/incidents/{{ ansible_eda.event.incident.id }}/comments"
+            url: "{{ bigpanda_base_url }}/v2.0/environments/{{ ansible_eda.event.environment.id }}/incidents/{{ ansible_eda.event.incident.id }}/comments"
             method: POST
             status_code: 204
             headers:
@@ -100,7 +100,7 @@
       block:
         - name: Resolve Big Panda Incident
           ansible.builtin.uri:
-            url: "{{ bigpanda_base_url }}/environments/{{ ansible_eda.event.environment.id }}/incidents/{{ ansible_eda.event.incident.id }}/resolve"
+            url: "{{ bigpanda_base_url }}/v2.0/environments/{{ ansible_eda.event.environment.id }}/incidents/{{ ansible_eda.event.incident.id }}/resolve"
             method: POST
             status_code: 202
             headers:
