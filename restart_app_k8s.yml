@@ -91,7 +91,7 @@
             msg: "ERROR: {{ application_test_result }}"
 
     - name: Assert that Application is operational
-      ansible.bultin.assert:
+      ansible.builtin.assert:
         that:
           "'Hostname: wwt-demo-app-' in application_test_result.content"
         fail_msg: "WWT-Demo-App is not operational..."
