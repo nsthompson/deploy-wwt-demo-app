@@ -62,6 +62,7 @@
           retries: 3
           register: create_comment_result
           when: ansible_eda.event is defined
+          delegate_to: localhost
       rescue:
         - name: Something went wrong...
           ansible.builtin.debug:
@@ -78,6 +79,7 @@
           delay: 5
           retries: 3
           register: application_test_result
+          delegate_to: localhost
       rescue:
         - name: Something went wrong...
           ansible.builtin.debug:
