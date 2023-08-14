@@ -1,0 +1,25 @@
+---
+- name: Remediate WWT-Demo Application
+  hosts: all
+  sources:
+    - wwt.eda.bigpanda:
+        api_token: "{{ bigpanda_api_token }}"
+        environment: "{{ bigpanda_environment }}"
+        delay: "{{ delay }}"
+  rules:
+    - name: Restart Demo Application
+      condition: >-
+        event.alert.tags.alertname == "MainPageHTTPStatusNotOK" and
+        event.alert.tags.event_action == "recreate"
+      throttle:
+        once_within: 5 minutes
+        group_by_attributes:
+          - event.incident.id
+      action:
+        run_job_template:
+          name: Restart Demo App
+          organization: Application-Demo
+          job_args:
+            extra_vars:
+              deployment_name: "{{ event.alert.tags.container }}"
+              k8s_namespace: "{{ event.alert.tags.app }}"
