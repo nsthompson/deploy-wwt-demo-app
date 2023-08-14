@@ -6,6 +6,7 @@
     username: "{{ k8s_username }}"
     password: "{{ k8s_password }}"
     cluster_url: "{{ hostvars[inventory_hostname].cluster_url }}"
+    bigpanda_base_url: https://api.bigpanda.io/resources/v2.0
 
   tasks:
     - name: Get Openshift Access Token
@@ -40,3 +41,48 @@
         replicas: 1
         validate_certs: false
       delegate_to: localhost
+
+    - name: Update Big Panda
+      block:
+        - name: Comment on Big Panda Incident
+          ansible.builtin.uri:
+            url: "{{ bigpanda_base_url }}/environments/{{ ansible_eda.event.environment.id }}/incidents/{{ ansible_eda.event.incident.id }}/comments"
+            method: POST
+            status_code: 204
+            headers:
+              Content-Type: application/json
+              Accept: application/json
+              Authorization: "Bearer {{ bigpanda_api_key }}"
+            body_format: json
+            body:
+              comment: "Incident handled by Event-Driven Ansible ruleset: {{ ansible_eda.ruleset }}"
+          changed_when: create_comment_result.status == 204
+          until: create_comment_result.status != 429
+          delay: 5
+          retries: 3
+          register: create_comment_result
+          when: ansible_eda.event is defined
+      rescue:
+        - name: Something went wrong...
+          ansible.builtin.debug:
+            msg: "ERROR: {{ create_comment_result }}"
+
+    - name: Test Application
+      block:
+        - name: Test Application
+          ansible.builtin.uri:
+            url: "https://{{ ansible_eda.event.alert.tags.openshiftRoute }}"
+            method: GET
+            return_content: true
+          until: application_test_result.status == 200
+          delay: 5
+          retries: 3
+          register: application_test_result
+      rescue:
+        - name: Something went wrong...
+          ansible.builtin.debug:
+            msg: "ERROR: {{ application_test_result }}"
+
+    - name: Debug
+      ansible.builtin.debug:
+        var: application_test_result
