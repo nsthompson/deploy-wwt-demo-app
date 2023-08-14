@@ -72,11 +72,11 @@
       block:
         - name: Wait for the application to come online
           ansible.builtin.pause:
-            seconds: 15
+            seconds: 10
 
         - name: Test Application
           ansible.builtin.uri:
-            url: "https://{{ ansible_eda.event.alert.tags.openshiftRoute }}"
+            url: "http://{{ ansible_eda.event.alert.tags.openshiftRoute }}"
             method: GET
             return_content: true
             validate_certs: false
