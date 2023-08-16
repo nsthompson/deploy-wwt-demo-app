@@ -9,7 +9,9 @@ The WWT Demo Application can be found at <https://github.com/nsthompson/wwt-demo
 ## Playbooks
 
 `deploy_app.yml` - Playbook to deploy demo application container using podman.
+
 `remove_app.yml` - Playbook to remove demo application container.
+
 `restart_app_k8s.yml` - Playbook to remediate application failure when deployed on top of Openshift.
 
 ## Rulebooks
