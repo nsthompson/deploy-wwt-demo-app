@@ -12,6 +12,19 @@
     - name: Update Big Panda
       block:
         - name: Comment on Big Panda Incident
+          bigpanda.incident.comment:
+            incident_id: "{{ ansible_eda.event.incident.id }}"
+            comment: "Incident handled by Event-Driven Ansible ruleset: {{ ansible_eda.ruleset }}"
+            api_token: "{{ bigpanda_api_token }}"
+          changed_when: create_comment_result.status == 204
+          until: create_comment_result.status != 429
+          delay: 5
+          retries: 3
+          register: create_comment_result
+          when: ansible_eda.event is defined
+          delegate_to: localhost
+
+        - name: Comment on Big Panda Incident
           ansible.builtin.uri:
             url: "{{ bigpanda_base_url }}/v2.0/environments/{{ ansible_eda.event.environment.id }}/incidents/{{ ansible_eda.event.incident.id }}/comments"
             method: POST
