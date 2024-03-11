@@ -142,3 +142,13 @@
 #           ansible.builtin.debug:
 #             msg: "ERROR: {{ resolve_incident_result }}"
 #
+    - name: Update Big Panda
+      block:
+        - name: Resolve Big Panda Incident
+          bigpanda.incident.resolve:
+            # incident_id: "{{ ansible_eda.event.incident.id }}"
+            incident_id: "{{ incident_id }}"
+            environment_id: "{{ env_id }}"
+            resolution_comment:" Incident resolved by Event-Driven Ansible ruleset"
+            # comment: "Incident handled by Event-Driven Ansible ruleset: {{ ansible_eda.ruleset }}"
+            api_token: "{{ bigpanda_api_token }}"
