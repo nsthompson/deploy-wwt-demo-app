@@ -3,9 +3,9 @@
   hosts: all
   gather_facts: false
   vars:
-    username: "{{ k8s_username }}"
-    password: "{{ k8s_password }}"
-    cluster_url: "{{ hostvars[inventory_hostname].cluster_url }}"
+    # username: "{{ k8s_username }}"
+    # password: "{{ k8s_password }}"
+    # cluster_url: "{{ hostvars[inventory_hostname].cluster_url }}"
     bigpanda_base_url: https://api.bigpanda.io/resources
 
   tasks:
@@ -13,15 +13,17 @@
       block:
         - name: Comment on Big Panda Incident
           bigpanda.incident.comment:
-            incident_id: "{{ ansible_eda.event.incident.id }}"
-            comment: "Incident handled by Event-Driven Ansible ruleset: {{ ansible_eda.ruleset }}"
+            # incident_id: "{{ ansible_eda.event.incident.id }}"
+            incident_id: "{{ incident_id }}"
+            comment: "Incident handled by Event-Driven Ansible ruleset: "
+            # comment: "Incident handled by Event-Driven Ansible ruleset: {{ ansible_eda.ruleset }}"
             api_token: "{{ bigpanda_api_token }}"
           changed_when: create_comment_result.status == 204
           until: create_comment_result.status != 429
           delay: 5
           retries: 3
           register: create_comment_result
-          when: ansible_eda.event is defined
+          # when: ansible_eda.event is defined
           delegate_to: localhost
 
 #         - name: Comment on Big Panda Incident
