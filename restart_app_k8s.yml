@@ -14,9 +14,9 @@
         - name: Comment on Big Panda Incident
           bigpanda.incident.comment:
             incident_id: "{{ ansible_eda.event.incident.id }}"
+            environment_id: "{{ ansible_eda.event.environment.id }}"
             comment: "Incident handled by Event-Driven Ansible ruleset: {{ ansible_eda.ruleset }}"
             api_token: "{{ bigpanda_api_key }}"
-            environment_id: "{{ ansible_eda.event.environment.id }}"
           delay: 5
           retries: 3
           register: create_comment_result
