@@ -12,19 +12,11 @@
     - name: Update Big Panda
       block:
         - name: Comment on Big Panda Incident
-          ansible.builtin.uri:
-            url: "{{ bigpanda_base_url }}/v2.0/environments/{{ ansible_eda.event.environment.id }}/incidents/{{ ansible_eda.event.incident.id }}/comments"
-            method: POST
-            status_code: 204
-            headers:
-              Content-Type: application/json
-              Accept: application/json
-              Authorization: "Bearer {{ bigpanda_api_key }}"
-            body_format: json
-            body:
-              comment: "Incident handled by Event-Driven Ansible ruleset: {{ ansible_eda.ruleset }}"
-          changed_when: create_comment_result.status == 204
-          until: create_comment_result.status != 429
+          bigpanda.incident.comment:
+            incident_id: "{{ ansible_eda.event.incident.id }}"
+            environment_id: "{{ ansible_eda.event.environment.id }}"
+            comment: "Incident handled by Event-Driven Ansible ruleset: {{ ansible_eda.ruleset }}"
+            api_token: "{{ bigpanda_api_key }}"
           delay: 5
           retries: 3
           register: create_comment_result
@@ -99,19 +91,11 @@
     - name: Update Big Panda
       block:
         - name: Resolve Big Panda Incident
-          ansible.builtin.uri:
-            url: "{{ bigpanda_base_url }}/v2.0/environments/{{ ansible_eda.event.environment.id }}/incidents/{{ ansible_eda.event.incident.id }}/resolve"
-            method: POST
-            status_code: 202
-            headers:
-              Content-Type: application/json
-              Accept: application/json
-              Authorization: "Bearer {{ bigpanda_api_key }}"
-            body_format: json
-            body:
-              comments: "Incident resolved by Event-Driven Ansible ruleset: {{ ansible_eda.ruleset }}"
-          changed_when: resolve_incident_result.status == 202
-          until: resolve_incident_result.status != 429
+          bigpanda.incident.resolve:
+            incident_id: "{{ ansible_eda.event.incident.id }}"
+            environment_id: "{{ ansible_eda.event.environment.id }}"
+            resolution_comment: "Incident resolved by Event-Driven Ansible ruleset: {{ ansible_eda.ruleset }}"
+            api_token: "{{ bigpanda_api_key }}"
           delay: 5
           retries: 3
           register: resolve_incident_result
